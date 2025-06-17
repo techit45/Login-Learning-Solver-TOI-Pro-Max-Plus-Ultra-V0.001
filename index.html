@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Learning Solver TOI Pro Max Plus Ultra V0.001</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css">
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚀 Login Learning Solver TOI Pro Max Plus Ultra V0.001</h1>
+            <div class="status">
+                <span class="status-dot"></span>
+                <span id="statusText">พร้อมใช้งาน</span>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- API Configuration -->
+            <div class="config-section">
+                <div class="config-title">⚙️ ตั้งค่า API</div>
+                <div class="config-group">
+                    <label for="geminiApiKey">Gemini API Key:</label>
+                    <div class="api-key-wrapper">
+                      <input type="password" id="geminiApiKey" placeholder="AIza..." value="AIzaSyDnijTt3my_sMB5y_IoVfOXxaV3gr0KOzY" readonly>
+                      <button id="apiKeyLockBtn">🔒</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="config-section">
+                <div class="config-title">📁 อัปโหลดไฟล์</div>
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📄</div>
+                    <div style="color: #e2e8f0; font-size: 0.9rem;">วางไฟล์ที่นี่ หรือ คลิกเพื่อเลือกไฟล์</div>
+                    <div style="color: #94a3b8; font-size: 0.8rem;">PDF, PNG, JPG</div>
+                    <input type="file" id="fileInput" style="display: none;" accept=".pdf,.png,.jpg,.jpeg">
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <strong>ไฟล์:</strong> <span id="fileName"></span><br>
+                    <strong>ขนาด:</strong> <span id="fileSize"></span>
+                </div>
+
+                <button class="btn btn-small" id="processBtn" disabled style="width: 100%;">🔍 ประมวลผลไฟล์ (OCR)</button>
+                
+                <div class="progress-bar" id="progressBar" style="display: none;">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Output Settings -->
+            <div class="config-section">
+                <div class="config-title">🎯 ตั้งค่าผลลัพธ์</div>
+                <div class="config-group">
+                    <label for="outputLanguage">ภาษาของคำอธิบาย:</label>
+                    <select id="outputLanguage">
+                        <option value="thai">ภาษาไทย</option>
+                        <option value="english">English</option>
+                        <option value="mixed">ผสม (อธิบายไทย, คอมเมนต์โค้ดอังกฤษ)</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="codeLanguage">ภาษาของโค้ด:</label>
+                    <select id="codeLanguage">
+                        <option value="both">ทั้ง C++ และ Python</option>
+                        <option value="cpp">C++ เท่านั้น</option>
+                        <option value="python">Python เท่านั้น</option>
+                    </select>
+                </div>
+                <div class="config-group">
+                    <label for="solutionDetail">ระดับความละเอียด:</label>
+                    <select id="solutionDetail">
+                        <option value="brief">แบบสั้นกระชับ</option>
+                        <option value="detailed">แบบละเอียด</option>
+                        <option value="beginner">สำหรับผู้เริ่มต้น</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="main-content">
+            <!-- OCR Results Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">📖 ผลลัพธ์จาก OCR (แก้ไขได้)</div>
+                </div>
+                <div class="panel-content">
+                    <textarea id="ocrContent" class="ocr-result-textarea" placeholder="อัปโหลดไฟล์เพื่อดูผลลัพธ์ OCR..."></textarea>
+                    <button class="btn" id="sendToAiBtn" disabled style="margin-top: 10px;">🤖 ส่งให้ AI วิเคราะห์</button>
+                </div>
+            </div>
+
+            <!-- AI Solution Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">🤖 ผลลัพธ์จาก AI</div>
+                </div>
+                <div class="panel-content">
+                    <div id="solutionContent" class="solution-content">
+                        <div class="empty-state">
+                            <div class="empty-icon">🤖</div>
+                            <div>ผลลัพธ์จาก AI จะแสดงที่นี่</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Python Code Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">🐍 โค้ด Python</div>
+                    <div class="code-actions">
+                        <button class="code-btn copy-btn" onclick="copyCode('pythonCode', this)">📋 คัดลอก</button>
+                        <button class="code-btn refresh-btn" onclick="refreshCode('python', this)">🔄 แปลงโค้ด</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div id="pythonCode" class="code-display">
+                        <div class="empty-state">
+                            <div class="empty-icon">🐍</div>
+                            <div>โค้ด Python จะแสดงที่นี่</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C++ Code Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title">⚡ โค้ด C++</div>
+                    <div class="code-actions">
+                        <button class="code-btn copy-btn" onclick="copyCode('cppCode', this)">📋 คัดลอก</button>
+                        <button class="code-btn" onclick="showCppInfo()">ℹ️ วิธีรันโค้ด</button>
+                        <button class="code-btn refresh-btn" onclick="refreshCode('cpp', this)">🔄 แปลงโค้ด</button>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <div id="cppCode" class="code-display">
+                        <div class="empty-state">
+                            <div class="empty-icon">⚡</div>
+                            <div>โค้ด C++ จะแสดงที่นี่</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+</html>
